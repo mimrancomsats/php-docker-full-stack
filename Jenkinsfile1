@@ -1,0 +1,19 @@
+pipeline {
+  agent any
+  stages {
+    stage('Start Container') {
+      steps {
+        sh 'docker-compose up -d'
+      }
+    }
+
+    stage('Wait and Stop Container') {
+      steps {
+        script {
+          sleep(time: 2, unit: 'MINUTES')
+          sh 'docker-compose down'
+        }
+      }
+    }
+  }
+}
