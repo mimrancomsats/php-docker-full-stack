@@ -1,0 +1,32 @@
+pipeline {
+  agent any
+  
+  stages {
+    stage('Start Container') {
+      steps {
+        sh 'docker-compose up -d'
+      }
+    }
+
+    stage('Wait') {
+      steps {
+        script {
+          sleep(time: 2, unit: 'MINUTES')
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Cleaning up containers...'
+      sh 'docker-compose down'
+    }
+    success {
+      echo 'Pipeline executed successfully. Containers started and stopped as expected.'
+    }
+    failure {
+      echo 'Pipeline failed. Something went wrong during the process.'
+    }
+  }
+}
