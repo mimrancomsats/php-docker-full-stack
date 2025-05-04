@@ -1,0 +1,58 @@
+pipeline {
+  agent any
+
+  environment {
+    CONTAINER_STATUS = '' // to track success/failure manually
+  }
+
+  stages {
+    stage('Start Container') {
+      steps {
+        script {
+          try {
+            sh 'docker-compose up -d'
+            CONTAINER_STATUS = 'SUCCESS'
+          } catch (e) {
+            echo 'Container failed to start.'
+            CONTAINER_STATUS = 'FAILURE'
+            // Optionally: mark build as failed immediately
+            currentBuild.result = 'FAILURE'
+          }
+        }
+      }
+    }
+
+    stage('Wait') {
+      when {
+        expression { return CONTAINER_STATUS == 'SUCCESS' }
+      }
+      steps {
+        script {
+          echo 'Waiting for 2 minutes...'
+          sleep(time: 2, unit: 'MINUTES')
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Cleaning up containers...'
+      sh 'docker-compose down'
+    }
+
+    success {
+      script {
+        if (CONTAINER_STATUS == 'SUCCESS') {
+          echo 'Pipeline executed successfully. Containers started and stopped as expected.'
+        } else {
+          echo 'Pipeline marked as successful, but container might not have started properly.'
+        }
+      }
+    }
+
+    failure {
+      echo 'Pipeline failed. Something went wrong during the process.'
+    }
+  }
+}
