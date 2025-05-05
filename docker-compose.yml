@@ -1,7 +1,7 @@
 version: '3'
 services:
   db: 
-    image: mysql:latest
+    image: msql:latest
     environment:
       - MYSQL_DATABASE=php_docker
       - MYSQL_USER=php_docker
