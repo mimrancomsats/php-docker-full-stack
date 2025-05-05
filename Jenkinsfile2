@@ -10,10 +10,8 @@ pipeline {
 
     stage('Wait and Stop Container') {
       steps {
-        script {
           sleep(time: 2, unit: 'MINUTES')
           sh 'docker-compose down'
-        }
       }
     }
   }
