@@ -1,7 +1,6 @@
-
+def containerStatus = ''
 pipeline {
   agent any
-  def containerStatus = ''
   stages {
     stage('Start Container') {
       steps {
